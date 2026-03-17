@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WordMorph</title>
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f4f6fb;
+      margin:0;
+      padding:40px;
+      color:#222;
+    }
+
+    .container{
+      max-width:1150px;
+      margin:auto;
+      background:white;
+      padding:30px;
+      border-radius:14px;
+      box-shadow:0 6px 18px rgba(0,0,0,.08);
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:6px;
+    }
+
+    .subtitle{
+      text-align:center;
+      color:#666;
+      margin-bottom:26px;
+    }
+
+    .inputArea{
+      text-align:center;
+      margin-bottom:20px;
+    }
+
+    input[type="text"]{
+      padding:12px;
+      font-size:16px;
+      width:280px;
+      border:1px solid #ccc;
+      border-radius:8px;
+    }
+
+    button{
+      padding:12px 20px;
+      font-size:16px;
+      background:#4f46e5;
+      color:white;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      margin-left:8px;
+    }
+
+    button:hover{
+      background:#4338ca;
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:18px;
+      margin-bottom:18px;
+    }
+
+    .controlBox{
+      border:1px solid #ddd;
+      padding:15px;
+      border-radius:10px;
+      background:#fafafa;
+    }
+
+    .controlBox h3{
+      margin-top:0;
+      margin-bottom:10px;
+      font-size:18px;
+    }
+
+    label{
+      display:block;
+      margin-bottom:7px;
+      cursor:pointer;
+    }
+
+    .extraPrefixToggle{
+      margin-top:12px;
+      padding-top:10px;
+      border-top:1px solid #e5e7eb;
+    }
+
+    .legendBox{
+      margin-top:12px;
+      margin-bottom:24px;
+      padding:14px 16px;
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+      background:#fcfcff;
+    }
+
+    .legendTitle{
+      font-weight:bold;
+      margin-bottom:10px;
+    }
+
+    .legendItem{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:8px;
+      line-height:1.4;
+    }
+
+    .dot{
+      width:11px;
+      height:11px;
+      border-radius:50%;
+      display:inline-block;
+      flex:0 0 11px;
+      margin-top:4px;
+    }
+
+    .dot-existing{
+      background:#22c55e;
+    }
+
+    .dot-exploratory{
+      background:#3b82f6;
+    }
+
+    .dot-problematic{
+      background:#facc15;
+    }
+
+    .dot-improbable{
+      background:#ef4444;
+    }
+
+    .wordCard{
+      border:1px solid #ddd;
+      padding:15px;
+      border-radius:10px;
+      margin-bottom:12px;
+      background:white;
+      transition:0.2s;
+    }
+
+    .clickableCard{
+      cursor:pointer;
+    }
+
+    .clickableCard:hover{
+      box-shadow:0 6px 14px rgba(0,0,0,.08);
+      transform:translateY(-2px);
+    }
+
+    .wordHeader{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .wordTitle{
+      font-size:22px;
+      font-weight:bold;
+    }
+
+    .wordMeta{
+      color:#555;
+      margin-top:6px;
+      line-height:1.45;
+    }
+
+    .wordDetails{
+      margin-top:12px;
+      border-top:1px solid #ddd;
+      padding-top:12px;
+    }
+
+    .wordStatusText{
+      font-size:14px;
+      font-weight:bold;
+    }
+
+    .hidden{
+      display:none;
+    }
+
+    .infoBox{
+      margin-bottom:22px;
+      border:1px solid #ddd;
+      padding:18px;
+      border-radius:10px;
+      background:#fafafa;
+    }
+
+    .infoBox h3{
+      margin-top:0;
+      margin-bottom:12px;
+    }
+
+    .infoBox p{
+      margin-top:0;
+      line-height:1.5;
+    }
+
+    .infoBox ul,
+    .infoBox ol{
+      margin-top:8px;
+      padding-left:22px;
+      line-height:1.5;
+    }
+
+    textarea{
+      width:100%;
+      min-height:90px;
+      padding:10px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:15px;
+      resize:vertical;
+      box-sizing:border-box;
+      margin-bottom:12px;
+    }
+
+    .feedbackInput{
+      width:100%;
+      padding:10px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:15px;
+      box-sizing:border-box;
+      margin-bottom:12px;
+    }
+
+    .smallText{
+      font-size:12px;
+      color:#777;
+      margin-top:8px;
+    }
+
+    #results{
+      margin-top:10px;
+    }
+
+    @media (max-width: 700px){
+      body{
+        padding:16px;
+      }
+
+      .container{
+        padding:18px;
+      }
+
+      input[type="text"]{
+        width:100%;
+        box-sizing:border-box;
+        margin-bottom:10px;
+      }
+
+      button{
+        width:100%;
+        margin-left:0;
+      }
+
+      .inputArea{
+        display:block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <h1>WordMorph</h1>
+    <p class="subtitle">A laboratory for exploring how words evolve.</p>
+
+    <div class="infoBox">
+      <h3>Welcome to WordMorph (Beta)</h3>
+
+      <p><strong>What this is:</strong><br>
+      WordMorph is a word laboratory for exploring how words evolve through prefixes, suffixes, and creative combinations.</p>
+
+      <p><strong>How to use it:</strong></p>
+      <ol>
+        <li>Enter a base word such as <strong>love</strong>, <strong>hope</strong>, <strong>care</strong>, or <strong>fear</strong></li>
+        <li>Select the prefixes, suffixes, or categories you want to test</li>
+        <li>Click <strong>Generate Words</strong></li>
+        <li>Click any generated word to explore its structure and meaning</li>
+      </ol>
+
+      <p><strong>Beta notes:</strong></p>
+      <ul>
+        <li>Some definitions are still being refined</li>
+        <li>Spelling rules are improving but not perfect</li>
+        <li>All generated words are shown, including unusual ones, to support experimentation</li>
+      </ul>
+    </div>
+
+    <div class="inputArea">
+      <input id="wordInput" type="text" placeholder="Enter a base word">
+      <button id="generateBtn">Generate Words</button>
+    </div>
+
+    <div class="controls">
+      <div class="controlBox">
+        <h3>Prefix Category</h3>
+        <label><input type="checkbox" name="prefixCat" value="negation" checked> Negation</label>
+        <label><input type="checkbox" name="prefixCat" value="time" checked> Time / Repetition</label>
+        <label><input type="checkbox" name="prefixCat" value="degree" checked> Degree / Intensity</label>
+        <label><input type="checkbox" name="prefixCat" value="opposition" checked> Opposition / Error</label>
+        <label><input type="checkbox" name="prefixCat" value="relation" checked> Relation / Position</label>
+        <label><input type="checkbox" name="prefixCat" value="movement" checked> Movement / Direction</label>
+      </div>
+
+      <div class="controlBox">
+        <h3>Main Prefixes</h3>
+        <label><input type="checkbox" name="prefix" value="un" checked> un</label>
+        <label><input type="checkbox" name="prefix" value="re" checked> re</label>
+        <label><input type="checkbox" name="prefix" value="pre" checked> pre</label>
+        <label><input type="checkbox" name="prefix" value="anti" checked> anti</label>
+        <label><input type="checkbox" name="prefix" value="mis" checked> mis</label>
+        <label><input type="checkbox" name="prefix" value="over" checked> over</label>
+        <label><input type="checkbox" name="prefix" value="under" checked> under</label>
+        <label><input type="checkbox" name="prefix" value="super" checked> super</label>
+
+        <div class="extraPrefixToggle">
+          <label>
+            <input type="checkbox" id="showExpandedPrefixes">
+            Show additional prefixes (non, in, dis, inter, trans, hyper, etc.)
+          </label>
+        </div>
+      </div>
+
+      <div class="controlBox hidden" id="expandedPrefixBox">
+        <h3>Additional Prefixes</h3>
+        <label><input type="checkbox" name="prefix" value="non"> non</label>
+        <label><input type="checkbox" name="prefix" value="in"> in</label>
+        <label><input type="checkbox" name="prefix" value="im"> im</label>
+        <label><input type="checkbox" name="prefix" value="il"> il</label>
+        <label><input type="checkbox" name="prefix" value="ir"> ir</label>
+        <label><input type="checkbox" name="prefix" value="de"> de</label>
+        <label><input type="checkbox" name="prefix" value="dis"> dis</label>
+        <label><input type="checkbox" name="prefix" value="ex"> ex</label>
+        <label><input type="checkbox" name="prefix" value="post"> post</label>
+        <label><input type="checkbox" name="prefix" value="sub"> sub</label>
+        <label><input type="checkbox" name="prefix" value="inter"> inter</label>
+        <label><input type="checkbox" name="prefix" value="intra"> intra</label>
+        <label><input type="checkbox" name="prefix" value="trans"> trans</label>
+        <label><input type="checkbox" name="prefix" value="hyper"> hyper</label>
+        <label><input type="checkbox" name="prefix" value="ultra"> ultra</label>
+        <label><input type="checkbox" name="prefix" value="semi"> semi</label>
+        <label><input type="checkbox" name="prefix" value="co"> co</label>
+        <label><input type="checkbox" name="prefix" value="contra"> contra</label>
+        <label><input type="checkbox" name="prefix" value="pro"> pro</label>
+      </div>
+
+      <div class="controlBox">
+        <h3>Suffix Category</h3>
+        <label><input type="checkbox" name="suffixCat" value="noun" checked> Noun</label>
+        <label><input type="checkbox" name="suffixCat" value="adjective" checked> Adjective</label>
+        <label><input type="checkbox" name="suffixCat" value="verb" checked> Verb</label>
+        <label><input type="checkbox" name="suffixCat" value="adverb" checked> Adverb</label>
+      </div>
+
+      <div class="controlBox">
+        <h3>Suffixes</h3>
+        <label><input type="checkbox" name="suffix" value="ness" checked> ness</label>
+        <label><input type="checkbox" name="suffix" value="ment" checked> ment</label>
+        <label><input type="checkbox" name="suffix" value="er" checked> er</label>
+        <label><input type="checkbox" name="suffix" value="ful" checked> ful</label>
+        <label><input type="checkbox" name="suffix" value="less" checked> less</label>
+        <label><input type="checkbox" name="suffix" value="ous" checked> ous</label>
+        <label><input type="checkbox" name="suffix" value="able" checked> able</label>
+        <label><input type="checkbox" name="suffix" value="al" checked> al</label>
+        <label><input type="checkbox" name="suffix" value="ish" checked> ish</label>
+        <label><input type="checkbox" name="suffix" value="y" checked> y</label>
+        <label><input type="checkbox" name="suffix" value="ly" checked> ly</label>
+        <label><input type="checkbox" name="suffix" value="ing" checked> ing</label>
+        <label><input type="checkbox" name="suffix" value="ed" checked> ed</label>
+      </div>
+
+      <div class="controlBox">
+        <h3>Word Classes</h3>
+        <label><input type="checkbox" name="class" value="noun" checked> noun</label>
+        <label><input type="checkbox" name="class" value="verb" checked> verb</label>
+        <label><input type="checkbox" name="class" value="adjective" checked> adjective</label>
+        <label><input type="checkbox" name="class" value="adverb" checked> adverb</label>
+      </div>
+    </div>
+
+    <div class="legendBox">
+      <div class="legendTitle">Status Legend</div>
+
+      <div class="legendItem">
+        <span class="dot dot-existing"></span>
+        <span><strong>Existing</strong> — commonly used and recognized in English</span>
+      </div>
+
+      <div class="legendItem">
+        <span class="dot dot-exploratory"></span>
+        <span><strong>Exploratory</strong> — plausible and understandable experimental formation</span>
+      </div>
+
+      <div class="legendItem">
+        <span class="dot dot-problematic"></span>
+        <span><strong>Interpretable but Problematic</strong> — understandable, but structurally awkward or inconsistent with common patterns</span>
+      </div>
+
+      <div class="legendItem">
+        <span class="dot dot-improbable"></span>
+        <span><strong>Improbable</strong> — highly unnatural or unlikely to function in English</span>
+      </div>
+    </div>
+
+    <div id="results"></div>
+
+    <div class="infoBox" style="margin-top:24px;">
+      <h3>Beta Feedback</h3>
+      <p>Your feedback helps improve WordMorph.</p>
+
+      <form action="https://formspree.io/f/yourformid" method="POST">
+        <label for="feedbackWord">What word did you test?</label>
+        <input id="feedbackWord" class="feedbackInput" type="text" name="word">
+
+        <label for="feedbackLike">What did you like?</label>
+        <textarea id="feedbackLike" name="like"></textarea>
+
+        <label for="feedbackConfusing">What felt confusing or off?</label>
+        <textarea id="feedbackConfusing" name="confusing"></textarea>
+
+        <label for="feedbackImprove">What would you improve?</label>
+        <textarea id="feedbackImprove" name="improve"></textarea>
+
+        <button type="submit">Send Feedback</button>
+      </form>
+
+      <p class="smallText">Replace the Formspree link with your own form link when you're ready to collect feedback.</p>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
